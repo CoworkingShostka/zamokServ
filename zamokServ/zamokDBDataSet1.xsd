@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="zamokDBDataSet1" targetNamespace="http://tempuri.org/zamokDBDataSet1.xsd" xmlns:mstns="http://tempuri.org/zamokDBDataSet1.xsd" xmlns="http://tempuri.org/zamokDBDataSet1.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections>
+          <Connection AppSettingsObjectName="Settings" AppSettingsPropertyName="zamokDBConnectionString" ConnectionStringObject="" IsAppSettingsProperty="true" Modifier="Assembly" Name="zamokDBConnectionString (Settings)" PropertyReference="ApplicationSettings.zamokServ.Properties.Settings.GlobalReference.Default.zamokDBConnectionString" Provider="System.Data.OleDb" />
+        </Connections>
+        <Tables>
+          <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="1243234TableAdapter" GeneratorDataComponentClassName="_1243234TableAdapter" Name="1243234" UserDataComponentName="1243234TableAdapter">
+            <MainSource>
+              <DbSource ConnectionRef="zamokDBConnectionString (Settings)" DbObjectName="1243234" DbObjectType="View" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="false" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="true" UserGetMethodName="GetData" UserSourceName="Fill">
+                <SelectCommand>
+                  <DbCommand CommandType="Text" ModifiedByUser="false">
+                    <CommandText>SELECT Num, numCust, F FROM [1243234]</CommandText>
+                    <Parameters />
+                  </DbCommand>
+                </SelectCommand>
+              </DbSource>
+            </MainSource>
+            <Mappings>
+              <Mapping SourceColumn="Num" DataSetColumn="Num" />
+              <Mapping SourceColumn="numCust" DataSetColumn="numCust" />
+              <Mapping SourceColumn="F" DataSetColumn="F" />
+            </Mappings>
+            <Sources />
+          </TableAdapter>
+        </Tables>
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="zamokDBDataSet1" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="True" msprop:Generator_DataSetName="zamokDBDataSet1" msprop:Generator_UserDSName="zamokDBDataSet1">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="_x0031_243234" msprop:Generator_TableClassName="_1243234DataTable" msprop:Generator_TableVarName="table1243234" msprop:Generator_TablePropName="_1243234" msprop:Generator_RowDeletingName="_1243234RowDeleting" msprop:Generator_RowChangingName="_1243234RowChanging" msprop:Generator_RowEvHandlerName="_1243234RowChangeEventHandler" msprop:Generator_RowDeletedName="_1243234RowDeleted" msprop:Generator_UserTableName="1243234" msprop:Generator_RowChangedName="_1243234RowChanged" msprop:Generator_RowEvArgName="_1243234RowChangeEvent" msprop:Generator_RowClassName="_1243234Row">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Num" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="-1" msdata:AutoIncrementStep="-1" msprop:Generator_ColumnVarNameInTable="columnNum" msprop:Generator_ColumnPropNameInRow="Num" msprop:Generator_ColumnPropNameInTable="NumColumn" msprop:Generator_UserColumnName="Num" type="xs:int" minOccurs="0" />
+              <xs:element name="numCust" msprop:Generator_ColumnVarNameInTable="columnnumCust" msprop:Generator_ColumnPropNameInRow="numCust" msprop:Generator_ColumnPropNameInTable="numCustColumn" msprop:Generator_UserColumnName="numCust" type="xs:int" minOccurs="0" />
+              <xs:element name="F" msprop:Generator_ColumnVarNameInTable="columnF" msprop:Generator_ColumnPropNameInRow="F" msprop:Generator_ColumnPropNameInTable="FColumn" msprop:Generator_UserColumnName="F" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="255" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
