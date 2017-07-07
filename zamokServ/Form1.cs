@@ -131,7 +131,7 @@ namespace zamokServ
             usersDataSet.usersDB.Rows[usersDataSet.usersDB.Rows.Count - 1][1] = textBox2.Text;
             usersDataSet.usersDB.Rows[usersDataSet.usersDB.Rows.Count - 1][2] = textBox5.Text;
             usersDataSet.usersDB.Rows[usersDataSet.usersDB.Rows.Count - 1][3] = textBox4.Text;
-            usersDataSet.usersDB.Rows[usersDataSet.usersDB.Rows.Count - 1][4] = usersDataSet.usersDB.Count;
+            //usersDataSet.usersDB.Rows[usersDataSet.usersDB.Rows.Count - 1][4] = usersDataSet.usersDB.Count;
             saveUS();
             addToHist(true, "Добавлен новый пользователь:" + textBox2.Text);
             //File.Copy(wrk, backup1, true);
@@ -516,25 +516,29 @@ namespace zamokServ
         /// <param name="value"></param>
         public void pubBrocker(string value)
         {
-            if (tempTopic[1] == "DoorCoworkingOut")
+            if (tempTopic[1] == "DoorCoworkingOut" )
             {
-                string strF = usersDataSet.usersDB.Rows[ind][2].ToString();
-                client.Publish(tempTopic[0] + "/F", Encoding.UTF8.GetBytes(strF), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
-
-                string strI = usersDataSet.usersDB.Rows[ind][3].ToString();
-                client.Publish(tempTopic[0] + "/I", Encoding.UTF8.GetBytes(strI), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
-
-                string strRez = usersDataSet.usersDB.Rows[ind][5].ToString();
-                client.Publish(tempTopic[0] + "/rez", Encoding.UTF8.GetBytes(strRez), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
-
                 string strInd = usersDataSet.usersDB.Rows[ind][4].ToString();
-                client.Publish(tempTopic[0] + "/ind", Encoding.UTF8.GetBytes(strInd), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
+                string strF = usersDataSet.usersDB.Rows[ind][2].ToString();
+                string strI = usersDataSet.usersDB.Rows[ind][3].ToString();
+                string strRez = usersDataSet.usersDB.Rows[ind][5].ToString();
+
+                client.Publish(tempTopic[0] + "UserData", Encoding.UTF8.GetBytes(strInd + '/' + strF + '/' + strI + '/' + strRez), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
+                //client.Publish(tempTopic[0] + "/F", Encoding.UTF8.GetBytes(strF), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
+                //client.Publish(tempTopic[0] + "/I", Encoding.UTF8.GetBytes(strI), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
+                //client.Publish(tempTopic[0] + "/rez", Encoding.UTF8.GetBytes(strRez), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
+                //client.Publish(tempTopic[0] + "/ind", Encoding.UTF8.GetBytes(strInd), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
 
             }
             else if (tempTopic[1] == "DoorCoworkingIn")
             {
                 string strInd = usersDataSet.usersDB.Rows[ind][4].ToString();
-                client.Publish(tempTopic[0] + "/ind", Encoding.UTF8.GetBytes(strInd), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
+                string strF = usersDataSet.usersDB.Rows[ind][2].ToString();
+                string strI = usersDataSet.usersDB.Rows[ind][3].ToString();
+                string strRez = usersDataSet.usersDB.Rows[ind][5].ToString();
+
+                client.Publish(tempTopic[0] + "UserData", Encoding.UTF8.GetBytes(strInd + '/' + strF + '/' + strI + '/' + strRez), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
+                //client.Publish(tempTopic[0] + "/ind", Encoding.UTF8.GetBytes(strInd), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
             }
 
             string strValue = Convert.ToString(value);
