@@ -79,6 +79,8 @@ namespace zamokServ
             visibility(false);
             dataGridView1.EditMode = DataGridViewEditMode.EditProgrammatically;
             //   serialPort1.ReadTimeout = 2000;
+
+            client.Publish("AS/server/test", Encoding.UTF8.GetBytes("Connect to 192.168.1.2"), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
         }
 
 
@@ -469,7 +471,16 @@ namespace zamokServ
             {
                 try
                 {
-                    if (tempTopic[2] == "userList")
+                    if (tempTopic[1] == "server" && tempTopic[2] == "test")
+                    {
+                        if(mqttMessageConv != "Connect to 192.168.1.2")
+                        {
+                            client.Publish("AS/server/test", Encoding.UTF8.GetBytes("Connect to 192.168.1.2"), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
+                        }
+                        mqttMessageConv = null;
+
+                    }
+                    else if (tempTopic[2] == "userList")
                     {
                         userList(mqttMessageConv);
                         mqttMessageConv = null;
@@ -516,6 +527,7 @@ namespace zamokServ
         {
             client.Subscribe(new string[] { "AS/+/cardID" }, new byte[] { MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE });//подписываемся на все двери
             client.Subscribe(new string[] { "AS/+/userList" }, new byte[] { MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE });//подписываемся на user list request
+            client.Subscribe(new string[] { "AS/server/test" }, new byte[] { MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE });
         }
         string clientID;
         /// <summary>
@@ -650,6 +662,8 @@ namespace zamokServ
                         {
                             msg = "yes";
                             usersDataSet.usersDB.Rows[ind][6] = "yes";
+
+                            saveUS();
                             return;
                         }
                     }
@@ -658,11 +672,13 @@ namespace zamokServ
                 }
 
                 usersDataSet.usersDB.Rows[ind][6] = "yes";
+                saveUS();
 
             }
             else if (tempTopic[1] == "DoorCoworkingIn" )
             {
                 usersDataSet.usersDB.Rows[ind][6] = "no";
+                saveUS();
             }
         }
         //тест публикации
