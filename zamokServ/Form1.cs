@@ -77,6 +77,7 @@ namespace zamokServ
             //dataGridView1.Columns[5].Visible = false;
             dataGridView1.Columns[6].Visible = false;
             visibility(false);
+            dataGridView1.EditMode = DataGridViewEditMode.EditProgrammatically;
             //   serialPort1.ReadTimeout = 2000;
         }
 
@@ -106,13 +107,15 @@ namespace zamokServ
                 button2.Location = new Point(350, 446);
 
                 button2.Size = new Size(220, 108);
-                return;
+                dataGridView1.EditMode = DataGridViewEditMode.EditOnEnter;
+                return; 
             }
             else if (vis == false)
             {
                 button2.Location = new Point(12, 446);
 
                 button2.Size = new Size(500, 108);
+                dataGridView1.EditMode = DataGridViewEditMode.EditProgrammatically;
                 return;
             }
 
@@ -172,19 +175,19 @@ namespace zamokServ
 
         }
         //     string login = "";
-        string pass = "";
+        //string pass = "";
         //    string uuid = "";
-        string cache = "";
+        //string cache = "";
 
         // string adminCard = "23351217172";
-        string tag;
+        //string tag;
         public string cardNo;
         string permit;
-        int doors = 1;//кол-во дверей
+        //int doors = 1;//кол-во дверей
 
         //    string kek = "";
         bool flag = false;
-        bool flag1 = false;
+        //bool flag1 = false;
         //добалвяем в базу историй новую запись
         public void addToHist(bool res, string comm)
         {
@@ -217,7 +220,57 @@ namespace zamokServ
         /// 
         string msg;
         int ind = 0;
-        public void solver(string dataIn)
+        int leng;
+        //bool start = false;
+        DataRow[] foundRows;
+
+        public void userList(string dataIn)
+        {
+            
+            //DataRow[] foundRows;
+            //foundRows = dataSet1.Tables["Customers"].Select("CompanyName Like 'A%'");
+            try
+            {
+                switch (dataIn)
+                {
+                    case "start":
+                        {
+                            //var foundRows = usersDataSet.usersDB.AsEnumerable().Where(x => x.Field<String>("Inside").Contains("yes"));
+                            foundRows = usersDataSet.usersDB.Select("Inside LIKE '%" + "yes" + "%'");
+                            
+                            if (foundRows != null)
+                            {
+                                //leng = foundRows.Length;
+                                ind = 0;
+                                pubUserList(foundRows[0]);
+                            }
+                            break;
+                        }
+                    case "next":
+                        {
+                            if (ind++ < foundRows.Length-1)
+                            {
+                                //ind++;
+                                pubUserList(foundRows[ind]);
+                            }
+                            else
+                            {
+                                client.Publish(tempTopic[0] + '/' + "UserData", Encoding.UTF8.GetBytes("stop"), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
+                                ind = 0;
+                            }
+
+                            break;
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+
+        }
+
+        public async void solver(string dataIn)
         {
              //dataIn = recv;
 
@@ -284,7 +337,7 @@ namespace zamokServ
                     else
                     {
                         addToHist(true, tempTopic[1] + " " + permit);
-                        //pubFIBrocker();
+                        await pubFIBrocker();
                         insideController();
                         pubBrocker(msg);
                         
@@ -416,11 +469,20 @@ namespace zamokServ
             {
                 try
                 {
-                    solver(mqttMessageConv);
-                    //solver(decodeMqttMess());
-                    label9.Text = mqttTopic;
-                    label10.Text = mqttMessageConv;
-                    mqttMessageConv = null;
+                    if (tempTopic[2] == "userList")
+                    {
+                        userList(mqttMessageConv);
+                        mqttMessageConv = null;
+                    }
+                    else
+                    {
+                        solver(mqttMessageConv);
+                        //solver(decodeMqttMess());
+                        label9.Text = mqttTopic;
+                        label10.Text = mqttMessageConv;
+                        mqttMessageConv = null;
+                    }
+
 
                 }
                 catch (Exception) { }
@@ -453,7 +515,7 @@ namespace zamokServ
         public void subBrocker()
         {
             client.Subscribe(new string[] { "AS/+/cardID" }, new byte[] { MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE });//подписываемся на все двери
-
+            client.Subscribe(new string[] { "AS/+/userList" }, new byte[] { MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE });//подписываемся на user list request
         }
         string clientID;
         /// <summary>
@@ -514,23 +576,35 @@ namespace zamokServ
         /// отвечаем брокеру
         /// </summary>
         /// <param name="value"></param>
-        public async Task pubBrocker(string value)
+        public void pubBrocker(string value)
         {
+            
+
+            string strValue = Convert.ToString(value);
+            //  tempTopic = mqttTopic.Split(new char[] { '/' });
+            sendTopic = tempTopic[0] + "/" + tempTopic[1] + "/server_response";
+            client.Publish(sendTopic, Encoding.UTF8.GetBytes(strValue), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
+
+        }
+
+        public async Task pubFIBrocker()
+        {
+
             await Task.Run(
                 async () =>
                 {
                     //if (tempTopic[1] == "DoorCoworkingOut")
                     //{
-                        string strInd = usersDataSet.usersDB.Rows[ind][4].ToString();
-                        string strF = usersDataSet.usersDB.Rows[ind][2].ToString();
-                        string strI = usersDataSet.usersDB.Rows[ind][3].ToString();
-                        string strRez = usersDataSet.usersDB.Rows[ind][5].ToString();
+                    string strInd = usersDataSet.usersDB.Rows[ind][4].ToString();
+                    string strF = usersDataSet.usersDB.Rows[ind][2].ToString();
+                    string strI = usersDataSet.usersDB.Rows[ind][3].ToString();
+                    string strRez = usersDataSet.usersDB.Rows[ind][5].ToString();
 
-                        client.Publish(tempTopic[0] + '/' + "UserData", Encoding.UTF8.GetBytes(strInd + '/' + strF + '/' + strI + '/' + strRez), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
-                        //client.Publish(tempTopic[0] + "/F", Encoding.UTF8.GetBytes(strF), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
-                        //client.Publish(tempTopic[0] + "/I", Encoding.UTF8.GetBytes(strI), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
-                        //client.Publish(tempTopic[0] + "/rez", Encoding.UTF8.GetBytes(strRez), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
-                        //client.Publish(tempTopic[0] + "/ind", Encoding.UTF8.GetBytes(strInd), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
+                    client.Publish(tempTopic[0] + '/' + "UserData", Encoding.UTF8.GetBytes(strInd + '/' + strF + '/' + strI + '/' + strRez), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
+                    //client.Publish(tempTopic[0] + "/F", Encoding.UTF8.GetBytes(strF), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
+                    //client.Publish(tempTopic[0] + "/I", Encoding.UTF8.GetBytes(strI), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
+                    //client.Publish(tempTopic[0] + "/rez", Encoding.UTF8.GetBytes(strRez), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
+                    //client.Publish(tempTopic[0] + "/ind", Encoding.UTF8.GetBytes(strInd), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
 
                     //}
                     //else if (tempTopic[1] == "DoorCoworkingIn")
@@ -547,21 +621,18 @@ namespace zamokServ
                     await Task.Delay(100);
                 });
 
-            string strValue = Convert.ToString(value);
-            //  tempTopic = mqttTopic.Split(new char[] { '/' });
-            sendTopic = tempTopic[0] + "/" + tempTopic[1] + "/server_response";
-            client.Publish(sendTopic, Encoding.UTF8.GetBytes(strValue), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
 
         }
 
-        //public void pubFIBrocker()
-        //{
+        public void pubUserList(DataRow Row)
+        {
+            string strInd = Row[4].ToString();
+            string strF = Row[2].ToString();
+            string strI = Row[3].ToString();
+            string strRez = Row[5].ToString();
 
-        //    //string strValue = Convert.ToString(value);
-        //    //  tempTopic = mqttTopic.Split(new char[] { '/' });
-
-            
-        //}
+            client.Publish(tempTopic[0] + '/' + "UserData", Encoding.UTF8.GetBytes(strInd + '/' + strF + '/' + strI + '/' + strRez), MqttMsgBase.QOS_LEVEL_AT_MOST_ONCE, false);
+        }
 
         public void insideController()
         {
